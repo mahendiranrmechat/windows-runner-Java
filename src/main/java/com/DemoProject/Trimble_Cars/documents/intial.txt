@@ -1,0 +1,43 @@
+CREATE DATABASE trimble_cars;
+USE trimble_cars;
+
+
+CREATE TABLE user (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_name VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('OWNER', 'CUSTOMER', 'ADMIN') NOT NULL
+);
+
+
+CREATE TABLE car (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    model VARCHAR(100) NOT NULL,
+    registration_number VARCHAR(100) NOT NULL UNIQUE,
+    status ENUM('IDLE', 'ON_LEASE', 'ON_SERVICE') NOT NULL,
+    owner_id BIGINT NOT NULL,
+    FOREIGN KEY (owner_id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE lease (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    car_id BIGINT NOT NULL,
+    customer_id BIGINT NOT NULL,
+    start_date DATETIME NOT NULL,
+    end_date DATETIME,
+    FOREIGN KEY (car_id) REFERENCES car(id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+INSERT INTO user (user_name, password, role) VALUES
+('owner1', 'pass1', 'OWNER'),
+('customer1', 'pass2', 'CUSTOMER'),
+('admin1', 'pass3', 'ADMIN');
+
+INSERT INTO car (model, registration_number, status, owner_id) VALUES
+('Honda City', 'TN01ABC1234', 'IDLE', 1),
+('Hyundai Creta', 'TN01XYZ5678', 'IDLE', 1);
+
+INSERT INTO lease (car_id, customer_id, start_date) VALUES
+(1, 2, NOW());
